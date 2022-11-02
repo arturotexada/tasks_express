@@ -20,9 +20,13 @@ app.get('/api/v1/tasks', async(req, res) => {
     res.status(201).send(jsonFile)
 });
 
-app.post('/api/v1/tasks', (req,res) => {
-    console.log(req.body);
-    res.end();
+app.post('/api/v1/tasks', async (req,res) => {
+    const newTask = req.body;
+    //console.log(req.body);
+    const tasksArray = JSON.parse(await fs.readFile(jsonPath, 'utf8'));
+    tasksArray.push(newTask);
+    await fs.writeFile(jsonPath,JSON.stringify(tasksArray));
+    res.sendStatus(201); //created
 });
 
 app.put('/api/v1/tasks', (req,res) => {
@@ -42,3 +46,7 @@ app.listen(8080, () => {
     console.log('Servidor corriendo en puerto 8080');
 });
 
+const getLastId = (dataArray) => {
+    const lastElementIndex = dataArray.length - 1;
+    return dataArray[lastElementIndex].id;
+}
